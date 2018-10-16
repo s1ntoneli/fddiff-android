@@ -1,5 +1,6 @@
 # fddiff-android
 
+辅助定位 fd 泄露的工具。
 检查 android 应用 fd, 展示两次应用操作之间的 fd 变化情况。
 
     -p, --pkg       package name
