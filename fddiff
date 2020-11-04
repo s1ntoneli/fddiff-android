@@ -1,5 +1,15 @@
 #!/bin/bash
 
+getopt --test
+if [ "$?" != "4" ];then
+    brew -v &gt; /dev/null
+    if [ "$?" != "0" ];then
+        echo 'Please install brew for Mac: ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+    fi
+    echo 'Please install gnu-getopt for Mac: brew install gnu-getopt'
+    exit 1
+fi
+
 help() {
     cat <<- HELP
 Usage: `basename $0` -p <packageName> [-v]
@@ -43,7 +53,7 @@ done
 
 if [ ! "$packageName" ] ; then echo "Usage: $0 -p <packageName>"; exit 1; fi
 
-pid=`adb shell ps -ef|grep com.android.browser$|sed 's/[[:space:]]\+/ /g'|cut -d' ' -f2`
+pid=`adb shell ps -ef|grep $packageName$|awk '{print $2 }' `
 
 if [ ! "$pid" ] ; then echo "pid of $packageName is not exists"; exit 1; fi
 
@@ -58,7 +68,7 @@ freedFds=`comm -23 "${FILE_LAST_FDS}_$pid" "${FILE_FDS}_$pid"`
 
 if [ "$newFds" ] ; then newCount=`echo "$newFds" |wc -l`; else newCount="0" ; fi
 if [ "$freedFds" ] ; then freedCount=`echo "$freedFds"|wc -l`; else freedCount="0" ; fi
-totalCount=`wc -l ${FILE_FDS}_$pid |cut -d' ' -f1`
+totalCount=`wc -l ${FILE_FDS}_$pid |awk '{print $1 }' `
 
 if $verbose ; then
     if [ "$newFds" ] ; then
